@@ -1,3 +1,3 @@
-module mapper
+module gomapper
 
 go 1.14
