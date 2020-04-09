@@ -1,4 +1,4 @@
-package mapper
+package gomapper
 
 import (
 	"errors"

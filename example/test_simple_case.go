@@ -2,26 +2,26 @@ package main
 
 import (
 	"fmt"
-	"mapper"
+	"gomapper"
 )
 
-type HttpProxy struct {
-	Host string `mapper:"host"`
-	Port int    `mapper:"port"`
+type Sample struct {
+	Foo string `mapper:"foo"`
+	Bar int    `mapper:"bar"`
 }
 
 func main() {
-	policy := mapper.TagNamingPolicy{TagKey: "mapper"}
-	m := mapper.NewMapper(policy)
+	policy := gomapper.TagNamingPolicy{TagKey: "mapper"}
+	m := gomapper.NewMapper(policy)
 	testData := map[string]interface{}{
-		"host": "0.0.0.0",
-		"port": 7890,
+		"foo": "0.0.0.0",
+		"bar": 7890,
 	}
 
-	httpProxy := HttpProxy{}
-	err := m.Map(testData, &httpProxy)
+	sample := Sample{}
+	err := m.Map(testData, &sample)
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("%#v\n", httpProxy)
+	fmt.Printf("%#v\n", sample)
 }
