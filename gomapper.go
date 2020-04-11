@@ -92,64 +92,65 @@ func (m Mapper) castFieldType(name string, value interface{}, type_ reflect.Type
 		}
 		val = reflect.ValueOf(v_)
 	case refTypeInt8:
-		v_, ok := value.(int8)
+		v_, ok := value.(int)
 		if !ok {
 			return nil, assertionErr
 		}
-		val = reflect.ValueOf(v_)
+		val = reflect.ValueOf(int8(v_))
 	case refTypeInt16:
-		v_, ok := value.(int16)
+		v_, ok := value.(int)
 		if !ok {
 			return nil, assertionErr
 		}
-		val = reflect.ValueOf(v_)
+		val = reflect.ValueOf(int16(v_))
 	case refTypeInt32:
-		v_, ok := value.(int32)
+		v_, ok := value.(int)
 		if !ok {
 			return nil, assertionErr
 		}
-		val = reflect.ValueOf(v_)
+		val = reflect.ValueOf(int32(v_))
 	case refTypeInt64:
-		v_, ok := value.(int64)
+		v_, ok := value.(int)
 		if !ok {
 			return nil, assertionErr
 		}
-		val = reflect.ValueOf(v_)
+		val = reflect.ValueOf(int64(v_))
 	case refTypeUint:
-		v_, ok := value.(uint)
+		v_, ok := value.(int)
 		if !ok {
 			return nil, assertionErr
 		}
-		val = reflect.ValueOf(v_)
+		val = reflect.ValueOf(uint(v_))
 	case refTypeUint8:
-		v_, ok := value.(uint8)
+		v_, ok := value.(int)
 		if !ok {
 			return nil, assertionErr
 		}
-		val = reflect.ValueOf(v_)
+		val = reflect.ValueOf(uint8(v_))
 	case refTypeUint16:
-		v_, ok := value.(uint16)
+		v_, ok := value.(int)
 		if !ok {
 			return nil, assertionErr
 		}
-		val = reflect.ValueOf(v_)
+		val = reflect.ValueOf(uint16(v_))
 	case refTypeUint32:
-		v_, ok := value.(uint32)
+		v_, ok := value.(int)
 		if !ok {
 			return nil, assertionErr
 		}
-		val = reflect.ValueOf(v_)
+		val = reflect.ValueOf(uint32(v_))
 	case refTypeUint64:
-		v_, ok := value.(uint64)
+		v_, ok := value.(int)
 		if !ok {
 			return nil, assertionErr
 		}
-		val = reflect.ValueOf(v_)
+		val = reflect.ValueOf(uint64(v_))
 	case refTypeFloat32:
-		v_, ok := value.(float32)
+		fv_, ok := value.(float64)
 		if !ok {
 			return nil, assertionErr
 		}
+		v_ := float32(fv_)
 		val = reflect.ValueOf(v_)
 	case refTypeFloat64:
 		v_, ok := value.(float64)
