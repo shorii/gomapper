@@ -7,20 +7,24 @@ import (
 )
 
 type Mapper struct {
-	namingPolicy INamingPolicy
+	mappingPolicy IMappingPolicy
 }
 
-func NewMapper(policy INamingPolicy) *Mapper {
-	return &Mapper{namingPolicy: policy}
+func NewMapper(policy IMappingPolicy) *Mapper {
+	mappingPolicy := policy
+	if policy == nil {
+		mappingPolicy = DefaultMappingPolicy{}
+	}
+	return &Mapper{mappingPolicy: mappingPolicy}
 }
 
 func (m Mapper) Map(data map[string]interface{}, obj interface{}) error {
 	for key, value := range data {
-		//name, err := m.namingPolicy.Get(ptr, key)
-		//if err != nil {
-		//	return err
-		//}
-		m.setField(obj, key, value)
+		name, err := m.mappingPolicy.Get(obj, key)
+		if err != nil {
+			return err
+		}
+		m.setField(obj, name, value)
 	}
 	return nil
 }
@@ -160,9 +164,13 @@ func (m Mapper) castFieldType(name string, value interface{}, type_ reflect.Type
 		}
 		v_ := reflect.New(type_).Elem()
 		for key, val := range mv_ {
-			fieldValue := v_.FieldByName(key)
+			name, err := m.mappingPolicy.Get(v_.Interface(), key)
+			if err != nil {
+				return nil, err
+			}
+			fieldValue := v_.FieldByName(name)
 			fieldType := fieldValue.Type()
-			refVal, err := m.castFieldType(key, val, fieldType)
+			refVal, err := m.castFieldType(name, val, fieldType)
 			if err != nil {
 				return nil, err
 			}

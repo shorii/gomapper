@@ -6,25 +6,25 @@ import (
 )
 
 type Nested struct {
-	Baz int `mapper:baz`
-	Qux int `mapper:qux`
+	Baz int `mapper:"bazkey"`
+	Qux int `mapper:"quxkey"`
 }
 
 type Sample struct {
-	Foo    string `mapper:"foo"`
-	Bar    int    `mapper:"bar"`
-	Nested Nested `mapper:"nested"`
+	Foo    string `mapper:"fookey"`
+	Bar    int    `mapper:"barkey"`
+	Nested Nested `mapper:"nestedkey"`
 }
 
 func main() {
-	policy := gomapper.TagNamingPolicy{TagKey: "mapper"}
+	policy := gomapper.TagMappingPolicy{TagKey: "mapper"}
 	m := gomapper.NewMapper(policy)
 	testData := map[string]interface{}{
-		"Foo": "foo value",
-		"Bar": 9999,
-		"Nested": map[string]interface{}{
-			"Baz": 9,
-			"Qux": 1,
+		"fookey": "foo value",
+		"barkey": 9999,
+		"nestedkey": map[string]interface{}{
+			"bazkey": 9,
+			"quxkey": 1,
 		},
 	}
 
