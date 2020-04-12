@@ -38,13 +38,15 @@ type SampleData struct {
 	MapVal           map[string]interface{}
 	PtrVal           *PtrVal
 	SliceVal         []int
-	StructVal        StructVal
+	StructVal1       StructVal
+	StructVal2       StructVal
 	UnsafePointerVal unsafe.Pointer
 }
 
 func Test_priv(t *testing.T) {
 	unsafepointerval := unsafe.Pointer(&UnsafePointerVal{})
-	structval := map[string]interface{}{"Foo": 1, "Bar": "bar"}
+	structval1 := map[string]interface{}{"Foo": 1, "Bar": "bar"}
+	structval2 := StructVal{Foo: 2, Bar: "baz"}
 	chanval := make(chan int, 3)
 	mapval := map[string]interface{}{"hoge": 1}
 	ptrval := &PtrVal{}
@@ -71,7 +73,8 @@ func Test_priv(t *testing.T) {
 		"PtrVal":           ptrval,
 		"SliceVal":         []int{15, 16, 17},
 		"StringVal":        "text",
-		"StructVal":        structval,
+		"StructVal1":       structval1,
+		"StructVal2":       structval2,
 		"UnsafePointerVal": unsafepointerval,
 	}
 	m := NewMapper(nil)
@@ -100,7 +103,8 @@ func Test_priv(t *testing.T) {
 		MapVal:           mapval,
 		PtrVal:           ptrval,
 		SliceVal:         []int{15, 16, 17},
-		StructVal:        StructVal{Foo: 1, Bar: "bar"},
+		StructVal1:       StructVal{Foo: 1, Bar: "bar"},
+		StructVal2:       StructVal{Foo: 2, Bar: "baz"},
 		UnsafePointerVal: unsafepointerval,
 	}
 	assert.Equal(t, expected, actual)

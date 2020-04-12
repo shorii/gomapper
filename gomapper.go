@@ -123,24 +123,28 @@ func (m Mapper) castFieldType(name string, value interface{}, type_ reflect.Type
 		val = reflect.ValueOf(complex64(v_))
 	case reflect.Struct:
 		mv_, ok := value.(map[string]interface{})
-		if !ok {
-			return nil, assertionErr
-		}
-		v_ := reflect.New(type_).Elem()
-		for key, val := range mv_ {
-			name, err := m.mappingPolicy.Get(v_.Interface(), key)
-			if err != nil {
-				return nil, err
+		if ok {
+			v_ := reflect.New(type_).Elem()
+			for key, val := range mv_ {
+				name, err := m.mappingPolicy.Get(v_.Interface(), key)
+				if err != nil {
+					return nil, err
+				}
+				fieldValue := v_.FieldByName(name)
+				fieldType := fieldValue.Type()
+				refVal, err := m.castFieldType(name, val, fieldType)
+				if err != nil {
+					return nil, err
+				}
+				fieldValue.Set(*refVal)
 			}
-			fieldValue := v_.FieldByName(name)
-			fieldType := fieldValue.Type()
-			refVal, err := m.castFieldType(name, val, fieldType)
-			if err != nil {
-				return nil, err
+			val = v_
+		} else {
+			val = reflect.ValueOf(value)
+			if val.Kind() != reflect.Struct {
+				return nil, errors.New("Invalid value type")
 			}
-			fieldValue.Set(*refVal)
 		}
-		val = v_
 	default:
 		val = reflect.ValueOf(value)
 	}
