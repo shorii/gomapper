@@ -3,12 +3,12 @@ name: GoTest
 on:
   push:
     branches:
-      - "develop"
+      - "master"
 
 jobs:
 
   test:
-    name: Test
+    name: Run Test
     runs-on: ubuntu-latest
     steps:
     - name: Check out code into the Go module directory
