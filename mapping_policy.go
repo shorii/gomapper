@@ -5,25 +5,30 @@ import (
 	"reflect"
 )
 
+// IMappingPolicy is interface to decide how to map
 type IMappingPolicy interface {
 	Get(obj interface{}, key string) (string, error)
 }
 
+// DefaultMappingPolicy uses map key to map
 type DefaultMappingPolicy struct{}
 
+// Get returns key as it is
 func (p DefaultMappingPolicy) Get(obj interface{}, key string) (string, error) {
 	return key, nil
 }
 
+// TagMappingPolicy uses tag to map
 type TagMappingPolicy struct {
 	TagKey string
 }
 
+// Get returns fieldname which is the same as key
 func (p TagMappingPolicy) Get(obj interface{}, key string) (string, error) {
 	val := reflect.Indirect(reflect.ValueOf(obj))
-	type_ := val.Type()
-	for i := 0; i < type_.NumField(); i++ {
-		structField := type_.Field(i)
+	reflectType := val.Type()
+	for i := 0; i < reflectType.NumField(); i++ {
+		structField := reflectType.Field(i)
 		extractedKey := structField.Tag.Get(p.TagKey)
 		if key != extractedKey {
 			continue
