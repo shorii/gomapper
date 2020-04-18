@@ -127,21 +127,11 @@ func (m Mapper) castFieldType(name string, value interface{}, reflectType reflec
 	case reflect.Struct:
 		mapData, ok := value.(map[string]interface{})
 		if ok {
-			newValue := reflect.New(reflectType).Elem()
-			for key, val := range mapData {
-				name, err := m.mappingPolicy.Get(newValue.Interface(), key)
-				if err != nil {
-					return nil, err
-				}
-				fieldValue := newValue.FieldByName(name)
-				fieldType := fieldValue.Type()
-				refVal, err := m.castFieldType(name, val, fieldType)
-				if err != nil {
-					return nil, err
-				}
-				fieldValue.Set(*refVal)
+			newValue, err := m.castStruct(mapData, reflectType)
+			if err != nil {
+				return nil, assertionErr
 			}
-			val = newValue
+			val = *newValue
 		} else {
 			val = reflect.ValueOf(value)
 			if val.Kind() != reflect.Struct {
@@ -158,30 +148,56 @@ func (m Mapper) castFieldType(name string, value interface{}, reflectType reflec
 		for i := 0; i < items.Len(); i++ {
 			element := arrayVal.Index(i)
 			mapData, ok := element.Interface().(map[string]interface{})
-			newValue := reflect.New(structType).Elem()
 			if ok {
-				for mapKey, mapValue := range mapData {
-					name, err := m.mappingPolicy.Get(newValue.Interface(), mapKey)
-					if err != nil {
-						return nil, err
-					}
-					fieldValue := newValue.FieldByName(name)
-					fieldType := fieldValue.Type()
-					refVal, err := m.castFieldType(name, mapValue, fieldType)
-					if err != nil {
-						return nil, err
-					}
-					fieldValue.Set(*refVal)
+				newValue, err := m.castStruct(mapData, structType)
+				if err != nil {
+					return nil, assertionErr
 				}
-				items.Index(i).Set(newValue)
+				items.Index(i).Set(*newValue)
 			} else {
 				items.Index(i).Set(element)
 			}
 		}
 		val = items
+	case reflect.Slice:
+		sliceVal := reflect.ValueOf(value)
+		slice := reflect.MakeSlice(reflectType, 0, 0)
+		structType := reflectType.Elem()
+		for i := 0; i < sliceVal.Cap(); i++ {
+			element := sliceVal.Index(i)
+			mapData, ok := element.Interface().(map[string]interface{})
+			if ok {
+				newValue, err := m.castStruct(mapData, structType)
+				if err != nil {
+					return nil, assertionErr
+				}
+				slice = reflect.Append(slice, *newValue)
+			} else {
+				slice = reflect.Append(slice, element)
+			}
+		}
+		val = slice
 	default:
 		val = reflect.ValueOf(value)
 	}
 
 	return &val, nil
+}
+
+func (m Mapper) castStruct(mapData map[string]interface{}, structType reflect.Type) (*reflect.Value, error) {
+	newValue := reflect.New(structType).Elem()
+	for mapKey, mapValue := range mapData {
+		name, err := m.mappingPolicy.Get(newValue.Interface(), mapKey)
+		if err != nil {
+			return nil, err
+		}
+		fieldValue := newValue.FieldByName(name)
+		fieldType := fieldValue.Type()
+		refVal, err := m.castFieldType(name, mapValue, fieldType)
+		if err != nil {
+			return nil, err
+		}
+		fieldValue.Set(*refVal)
+	}
+	return &newValue, nil
 }

@@ -402,44 +402,44 @@ func Test_ptr(t *testing.T) {
 	assert.Equal(t, expected, actual)
 }
 
-//type SliceData struct {
-//	SliceVal              [3]int
-//	SliceStructFromStruct [3]NestedStructData
-//	SliceStructFromMap    [3]NestedStructData
-//}
-//
-//func Test_slice(t *testing.T) {
-//	data := map[string]interface{}{
-//		"SliceVal": []int{1, 2, 3},
-//		"SliceStructFromStruct": []NestedStructData{
-//			NestedStructData{Foo: "fooval1"},
-//			NestedStructData{Foo: "fooval2"},
-//			NestedStructData{Foo: "fooval3"},
-//		},
-//		"SliceStructFromMap": []map[string]interface{}{
-//			map[string]interface{}{"Foo": "fooval7"},
-//			map[string]interface{}{"Foo": "fooval8"},
-//			map[string]interface{}{"Foo": "fooval9"},
-//		},
-//	}
-//	m := NewMapper(nil)
-//	actual := SliceData{}
-//	m.Map(data, &actual)
-//	expected := SliceData{
-//		SliceVal: []int{1, 2, 3},
-//		SliceStructFromStruct: []NestedStructData{
-//			NestedStructData{Foo: "fooval1"},
-//			NestedStructData{Foo: "fooval2"},
-//			NestedStructData{Foo: "fooval3"},
-//		},
-//		SliceStructFromMap: []NestedStructData{
-//			NestedStructData{Foo: "fooval7"},
-//			NestedStructData{Foo: "fooval8"},
-//			NestedStructData{Foo: "fooval9"},
-//		},
-//	}
-//	assert.Equal(t, expected, actual)
-//}
+type SliceData struct {
+	SliceVal              []int
+	SliceStructFromStruct []NestedStructData
+	SliceStructFromMap    []NestedStructData
+}
+
+func Test_slice(t *testing.T) {
+	data := map[string]interface{}{
+		"SliceVal": []int{1, 2, 3},
+		"SliceStructFromStruct": []NestedStructData{
+			NestedStructData{Foo: "fooval1"},
+			NestedStructData{Foo: "fooval2"},
+			NestedStructData{Foo: "fooval3"},
+		},
+		"SliceStructFromMap": []map[string]interface{}{
+			map[string]interface{}{"Foo": "fooval7"},
+			map[string]interface{}{"Foo": "fooval8"},
+			map[string]interface{}{"Foo": "fooval9"},
+		},
+	}
+	m := NewMapper(nil)
+	actual := SliceData{}
+	m.Map(data, &actual)
+	expected := SliceData{
+		SliceVal: []int{1, 2, 3},
+		SliceStructFromStruct: []NestedStructData{
+			NestedStructData{Foo: "fooval1"},
+			NestedStructData{Foo: "fooval2"},
+			NestedStructData{Foo: "fooval3"},
+		},
+		SliceStructFromMap: []NestedStructData{
+			NestedStructData{Foo: "fooval7"},
+			NestedStructData{Foo: "fooval8"},
+			NestedStructData{Foo: "fooval9"},
+		},
+	}
+	assert.Equal(t, expected, actual)
+}
 
 type StructData struct {
 	StructValFromStruct NestedStructData
