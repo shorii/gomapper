@@ -6,10 +6,12 @@ import (
 	"reflect"
 )
 
+// Mapper map to struct
 type Mapper struct {
 	mappingPolicy IMappingPolicy
 }
 
+// NewMapper create new Mapper
 func NewMapper(policy IMappingPolicy) *Mapper {
 	mappingPolicy := policy
 	if policy == nil {
@@ -18,6 +20,7 @@ func NewMapper(policy IMappingPolicy) *Mapper {
 	return &Mapper{mappingPolicy: mappingPolicy}
 }
 
+// Map map data to struct
 func (m Mapper) Map(data map[string]interface{}, obj interface{}) error {
 	for key, value := range data {
 		name, err := m.mappingPolicy.Get(obj, key)
@@ -56,81 +59,81 @@ func (m Mapper) setField(obj interface{}, name string, value interface{}) error 
 	return nil
 }
 
-func (m Mapper) castFieldType(name string, value interface{}, type_ reflect.Type) (*reflect.Value, error) {
+func (m Mapper) castFieldType(name string, value interface{}, reflectType reflect.Type) (*reflect.Value, error) {
 	var val reflect.Value
 	assertionErr := errors.New("failed to assert type")
-	kind := type_.Kind()
+	kind := reflectType.Kind()
 	switch kind {
 	case reflect.Int8:
-		v_, ok := value.(int)
+		castedVal, ok := value.(int)
 		if !ok {
 			return nil, assertionErr
 		}
-		val = reflect.ValueOf(int8(v_))
+		val = reflect.ValueOf(int8(castedVal))
 	case reflect.Int16:
-		v_, ok := value.(int)
+		castedVal, ok := value.(int)
 		if !ok {
 			return nil, assertionErr
 		}
-		val = reflect.ValueOf(int16(v_))
+		val = reflect.ValueOf(int16(castedVal))
 	case reflect.Int32:
-		v_, ok := value.(int)
+		castedVal, ok := value.(int)
 		if !ok {
 			return nil, assertionErr
 		}
-		val = reflect.ValueOf(int32(v_))
+		val = reflect.ValueOf(int32(castedVal))
 	case reflect.Int64:
-		v_, ok := value.(int)
+		castedVal, ok := value.(int)
 		if !ok {
 			return nil, assertionErr
 		}
-		val = reflect.ValueOf(int64(v_))
+		val = reflect.ValueOf(int64(castedVal))
 	case reflect.Uint:
-		v_, ok := value.(int)
+		castedVal, ok := value.(int)
 		if !ok {
 			return nil, assertionErr
 		}
-		val = reflect.ValueOf(uint(v_))
+		val = reflect.ValueOf(uint(castedVal))
 	case reflect.Uint8:
-		v_, ok := value.(int)
+		castedVal, ok := value.(int)
 		if !ok {
 			return nil, assertionErr
 		}
-		val = reflect.ValueOf(uint8(v_))
+		val = reflect.ValueOf(uint8(castedVal))
 	case reflect.Uint16:
-		v_, ok := value.(int)
+		castedVal, ok := value.(int)
 		if !ok {
 			return nil, assertionErr
 		}
-		val = reflect.ValueOf(uint16(v_))
+		val = reflect.ValueOf(uint16(castedVal))
 	case reflect.Uint32:
-		v_, ok := value.(int)
+		castedVal, ok := value.(int)
 		if !ok {
 			return nil, assertionErr
 		}
-		val = reflect.ValueOf(uint32(v_))
+		val = reflect.ValueOf(uint32(castedVal))
 	case reflect.Uint64:
-		v_, ok := value.(int)
+		castedVal, ok := value.(int)
 		if !ok {
 			return nil, assertionErr
 		}
-		val = reflect.ValueOf(uint64(v_))
+		val = reflect.ValueOf(uint64(castedVal))
 	case reflect.Complex64:
-		v_, ok := value.(complex128)
+		castedVal, ok := value.(complex128)
 		if !ok {
 			return nil, assertionErr
 		}
-		val = reflect.ValueOf(complex64(v_))
+		val = reflect.ValueOf(complex64(castedVal))
 	case reflect.Struct:
-		mv_, ok := value.(map[string]interface{})
+		mapData, ok := value.(map[string]interface{})
 		if ok {
-			v_ := reflect.New(type_).Elem()
-			for key, val := range mv_ {
-				name, err := m.mappingPolicy.Get(v_.Interface(), key)
+			newValue := reflect.New(reflectType).Elem()
+			for key, val := range mapData {
+				name, err := m.mappingPolicy.Get(newValue.Interface(), key)
 				if err != nil {
 					return nil, err
 				}
-				fieldValue := v_.FieldByName(name)
+				fieldValue := newValue.FieldByName(name)
 				fieldType := fieldValue.Type()
 				refVal, err := m.castFieldType(name, val, fieldType)
 				if err != nil {
@@ -138,7 +141,7 @@ func (m Mapper) castFieldType(name string, value interface{}, type_ reflect.Type
 				}
 				fieldValue.Set(*refVal)
 			}
-			val = v_
+			val = newValue
 		} else {
 			val = reflect.ValueOf(value)
 			if val.Kind() != reflect.Struct {

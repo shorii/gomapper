@@ -120,14 +120,14 @@ func Test_func(t *testing.T) {
 		"FuncVal": funcval,
 	}
 	m := NewMapper(nil)
-	actual_ := FuncData{}
-	m.Map(data, &actual_)
-	actual := fmt.Sprintf("%#v", actual_)
+	actual := FuncData{}
+	m.Map(data, &actual)
+	printedActual := fmt.Sprintf("%#v", actual)
 
-	expected_ := FuncData{
+	expected := FuncData{
 		FuncVal: funcval,
 	}
-	expected := fmt.Sprintf("%#v", expected_)
+	printedExpected := fmt.Sprintf("%#v", expected)
 
-	assert.Equal(t, expected, actual)
+	assert.Equal(t, printedExpected, printedActual)
 }
