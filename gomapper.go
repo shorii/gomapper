@@ -148,6 +148,37 @@ func (m Mapper) castFieldType(name string, value interface{}, reflectType reflec
 				return nil, errors.New("Invalid value type")
 			}
 		}
+	case reflect.Array:
+		arrayVal := reflect.ValueOf(value)
+		items := reflect.New(reflectType).Elem()
+		if arrayVal.Len() != items.Len() {
+			return nil, errors.New("Invalid value type")
+		}
+		structType := reflectType.Elem()
+		for i := 0; i < items.Len(); i++ {
+			element := arrayVal.Index(i)
+			mapData, ok := element.Interface().(map[string]interface{})
+			newValue := reflect.New(structType).Elem()
+			if ok {
+				for mapKey, mapValue := range mapData {
+					name, err := m.mappingPolicy.Get(newValue.Interface(), mapKey)
+					if err != nil {
+						return nil, err
+					}
+					fieldValue := newValue.FieldByName(name)
+					fieldType := fieldValue.Type()
+					refVal, err := m.castFieldType(name, mapValue, fieldType)
+					if err != nil {
+						return nil, err
+					}
+					fieldValue.Set(*refVal)
+				}
+				items.Index(i).Set(newValue)
+			} else {
+				items.Index(i).Set(element)
+			}
+		}
+		val = items
 	default:
 		val = reflect.ValueOf(value)
 	}
